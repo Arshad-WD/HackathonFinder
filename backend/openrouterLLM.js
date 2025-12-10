@@ -24,9 +24,6 @@ const client = new OpenAI({
 
 //  STABLE FREE MODELS
 const FREE_MODELS = [
-  "openchat/openchat-7b:free",
-  "mistralai/mistral-small-3.1-24b-instruct:free",
-  "mistralai/mistral-7b-instruct:free",
   "mistralai/mixtral-8x22b-instruct"
 ];
 
