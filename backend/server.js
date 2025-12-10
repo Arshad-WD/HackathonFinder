@@ -6,10 +6,10 @@ import "./cron.js"
 import { runDeepSearch } from "./runSearch.js";
 
 const app = express();
-app.use(cors(
-   origin= "*",
-    methods= ["GET", "POST"]
-));
+app.use(cors({
+   origin: "*",
+    methods: ["GET", "POST"]
+}));
 
 const RESULT_FILE = "results.json";
 
