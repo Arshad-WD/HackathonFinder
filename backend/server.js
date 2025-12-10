@@ -1,20 +1,26 @@
 import express from "express";
 import cors from "cors";
 import fs from "fs";
-import "./cron.js"
+import "./cron.js";
 
 import { runDeepSearch } from "./runSearch.js";
 
 const app = express();
+
+// ✅ REQUIRED FOR RENDER
+const PORT = process.env.PORT || 3001;
+
 app.use(cors({
-   origin: "*",
-    methods: ["GET", "POST"]
+  origin: "*",
+  methods: ["GET", "POST"]
 }));
+
+app.use(express.json());
 
 const RESULT_FILE = "results.json";
 
-//  MANUAL FETCH (BUTTON)
-app.get("/fetch", async (req, res) => {
+// ✅ ✅ MANUAL FETCH (FRONTEND BUTTON)
+app.post("/trigger", async (req, res) => {
   try {
     console.log("🖱 Manual fetch triggered");
 
@@ -30,8 +36,8 @@ app.get("/fetch", async (req, res) => {
   }
 });
 
-//  FRONTEND READS FROM HERE
-app.get("/events", (req, res) => {
+// ✅ ✅ FRONTEND READS FROM HERE
+app.get("/api/events", (req, res) => {
   if (!fs.existsSync(RESULT_FILE)) {
     return res.json([]);
   }
@@ -40,12 +46,12 @@ app.get("/events", (req, res) => {
   res.json(data);
 });
 
-
+// ✅ ✅ RENDER KEEP-ALIVE
 app.get("/ping", (req, res) => {
   res.send("OK");
 });
 
-
-app.listen(3001, () => {
-  console.log(" API running on http://localhost:3001");
+// ✅ ✅ RENDER-SAFE LISTENER
+app.listen(PORT, () => {
+  console.log(`✅ API running on port ${PORT}`);
 });
