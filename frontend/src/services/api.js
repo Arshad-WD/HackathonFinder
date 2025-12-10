@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ;
 
 export async function fetchEvents() {
   const res = await fetch(`${BASE_URL}/events`);
