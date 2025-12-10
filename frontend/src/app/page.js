@@ -28,13 +28,26 @@ export default function Home() {
     setEvents(data);
   }
 
-  async function handleFetch() {
+async function handleFetch() {
+  try {
     setLoading(true);
-    await triggerFetch();
+
+    const res = await triggerFetch();
+
+    if (!res.success) {
+      alert(res.message || "Fetch blocked by server");
+      return;
+    }
+
     await loadData();
+    alert(`✅ Fetch completed. ${res.count} new items added.`);
+  } catch (err) {
+    alert(err.message || "Server unreachable");
+  } finally {
     setLoading(false);
-    setPage(1);
   }
+}
+
 
   useEffect(() => {
     loadData();

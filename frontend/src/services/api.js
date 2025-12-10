@@ -11,6 +11,10 @@ export async function triggerFetch() {
     method: "POST"
   });
 
-  if (!res.ok) throw new Error("Failed to trigger fetch");
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || "Trigger blocked");
+  }
+
   return res.json();
 }
