@@ -1,16 +1,23 @@
-export const targets = [
-  // ✅ Hackathons (India + Global)
-  "https://unstop.com/hackathons",
-  "https://reskilll.com/allhacks",
-  "https://hack2skill.com/",
+const IS_CLOUD = process.env.RENDER === "true";
+
+// ✅ SAFE ON CLOUD (NO BLOCKING)
+const CLOUD_SAFE_TARGETS = [
   "https://devfolio.co/hackathons",
   "https://mlh.io/seasons/2025/events",
   "https://angelhack.com/hackathons/",
+  "https://hack2skill.com/",
+  "https://reskilll.com/allhacks"
+];
 
-  // ✅ Internships
+const LOCAL_ONLY_TARGETS = [
+  "https://unstop.com/hackathons",
   "https://internshala.com/internships",
   "https://www.naukri.com/internship-jobs",
-  "https://wellfound.com/jobs",
+  "https://www.linkedin.com/jobs/internship-jobs/",
   "https://careers.google.com/jobs/results/?employment_type=INTERN",
-  "https://www.linkedin.com/jobs/internship-jobs/"
+  "https://wellfound.com/jobs"
 ];
+
+export const targets = IS_CLOUD
+  ? CLOUD_SAFE_TARGETS
+  : [...CLOUD_SAFE_TARGETS, ...LOCAL_ONLY_TARGETS];
