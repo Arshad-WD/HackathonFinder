@@ -2,11 +2,9 @@ import express from "express";
 import cors from "cors";
 import fs from "fs";
 import "./cron.js";
-
 import { runDeepSearch } from "./runSearch.js";
 
 const app = express();
-
 const PORT = process.env.PORT || 3001;
 
 app.use(cors({
@@ -18,8 +16,34 @@ app.use(express.json());
 
 const RESULT_FILE = "results.json";
 
+// ✅ PROTECTION SYSTEM
+let isJobRunning = false;
+let lastRunTime = 0;
+const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
+
+// ✅ SAFE TRIGGER
 app.post("/trigger", async (req, res) => {
+  const now = Date.now();
+
+  if (isJobRunning) {
+    return res.status(429).json({
+      success: false,
+      message: "⚠️ A fetch is already in progress. Please wait."
+    });
+  }
+
+  if (now - lastRunTime < COOLDOWN_MS) {
+    const wait = Math.ceil((COOLDOWN_MS - (now - lastRunTime)) / 1000);
+    return res.status(429).json({
+      success: false,
+      message: `⏳ Please wait ${wait}s before triggering again.`
+    });
+  }
+
   try {
+    isJobRunning = true;
+    lastRunTime = now;
+
     console.log("🖱 Manual fetch triggered");
 
     const data = await runDeepSearch();
@@ -30,10 +54,16 @@ app.post("/trigger", async (req, res) => {
     });
   } catch (err) {
     console.error("Fetch failed:", err.message);
-    return res.status(500).json({ success: false });
+    return res.status(500).json({
+      success: false,
+      message: "Internal fetch error"
+    });
+  } finally {
+    isJobRunning = false;
   }
 });
 
+// ✅ FRONTEND READS FROM HERE
 app.get("/api/events", (req, res) => {
   if (!fs.existsSync(RESULT_FILE)) {
     return res.json([]);
