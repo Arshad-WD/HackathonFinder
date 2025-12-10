@@ -1,0 +1,8 @@
+node_modules
+.env
+llm-cache
+results.json
+archive.json
+.next
+dist
+playwright/.cache
