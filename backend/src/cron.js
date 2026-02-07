@@ -14,5 +14,5 @@ cron.schedule("0 9 * * 0", async () => {
 //  Daily cleanup at 2 AM
 cron.schedule("0 2 * * *", () => {
   console.log("⏱ Running expired events cleanup");
-  archiveExpiredEvents
+  archiveExpiredEvents();
 });

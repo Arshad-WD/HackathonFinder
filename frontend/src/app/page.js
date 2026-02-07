@@ -42,6 +42,7 @@ export default function Home() {
         return;
       }
       await loadData();
+      alert(`✨ Optimization Successful! Deep Search has curated ${res.count} fresh opportunities for you.`);
     } catch (err) {
       alert(err.message || "Server unreachable");
     } finally {

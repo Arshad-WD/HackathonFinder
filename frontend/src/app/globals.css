@@ -6,6 +6,7 @@
   --foreground: #0a0a0a;
   --accent: #6366f1;
   --accent-glow: rgba(99, 102, 241, 0.12);
+  --glass-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.03);
 }
 
 @theme inline {
@@ -21,6 +22,7 @@
     --foreground: #ffffff;
     --accent: #818cf8;
     --accent-glow: rgba(129, 140, 248, 0.18);
+    --glass-shadow: none;
   }
 }
 
@@ -85,7 +87,8 @@ body::after {
   }
 
   .glass-card {
-    @apply bg-white/20 dark:bg-white/5 backdrop-blur-2xl border border-white/30 dark:border-white/10 shadow-[0_32px_64px_-16px_rgba(0, 0, 0, 0.03)] dark:shadow-none;
+    @apply bg-white/20 dark:bg-white/5 backdrop-blur-2xl border border-white/30 dark:border-white/10;
+    box-shadow: var(--glass-shadow);
   }
 
   .text-gradient {
