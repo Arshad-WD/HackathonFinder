@@ -1,44 +1,34 @@
+import { RefreshCw } from "lucide-react";
+import { motion } from "framer-motion";
+
 export default function FetchButton({ onClick, loading }) {
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
       disabled={loading}
-      className="
+      className={`
         relative
-        inline-flex
+        flex
         items-center
-        justify-center
+        gap-2
         px-6
-        py-2.5
-        rounded-lg
+        py-3
+        rounded-2xl
         text-sm
-        font-medium
-        text-white
-        bg-gradient-to-r
-        from-gray-800
-        via-gray-600
-        to-gray-400
-        shadow-md
+        font-bold
         transition-all
-        duration-200
-        hover:brightness-110
-        hover:shadow-lg
-        active:scale-[0.98]
         disabled:opacity-50
         disabled:cursor-not-allowed
-        focus:outline-none
-        focus:ring-2
-        focus:ring-gray-800
-        focus:ring-offset-2
-      "
+        ${loading 
+          ? "bg-gray-100 dark:bg-white/5 text-gray-400" 
+          : "bg-accent text-white shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/40"
+        }
+      `}
     >
-      {loading && (
-        <span className="absolute inset-0 rounded-lg bg-white/10 animate-pulse"></span>
-      )}
-
-      <span className="relative">
-        {loading ? "Refreshing..." : "Refresh Data"}
-      </span>
-    </button>
+      <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+      <span>{loading ? "Discovering..." : "Scan Web"}</span>
+    </motion.button>
   );
 }

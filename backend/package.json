@@ -2,9 +2,10 @@
   "name": "deepsearch",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "src/server.js",
   "license": "MIT",
   "dependencies": {
+    "@octokit/rest": "^22.0.1",
     "axios": "^1.13.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -16,7 +17,7 @@
     "playwright": "^1.57.0"
   },
   "scripts": {
-    "dev": "node index.js",
-    "start": "node index.js"
+    "dev": "node src/server.js",
+    "start": "node src/server.js"
   }
 }

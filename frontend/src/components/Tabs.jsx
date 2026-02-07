@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 export default function Tabs({ active, setActive }) {
   const tabs = [
     { key: "hackathon", label: "Hackathons" },
@@ -5,17 +7,7 @@ export default function Tabs({ active, setActive }) {
   ];
 
   return (
-    <div className="
-      inline-flex
-      items-center
-      bg-gray-100/80
-      backdrop-blur
-      p-1
-      rounded-xl
-      border
-      border-gray-200
-      shadow-sm
-    ">
+    <div className="inline-flex p-1.5 glass rounded-[1.25rem] border border-gray-200/50 dark:border-white/5 shadow-sm">
       {tabs.map(tab => {
         const isActive = active === tab.key;
 
@@ -23,22 +15,20 @@ export default function Tabs({ active, setActive }) {
           <button
             key={tab.key}
             onClick={() => setActive(tab.key)}
-            className={`
-              px-6
-              py-2
-              rounded-lg
-              text-sm
-              font-medium
-              transition-all
-              duration-200
-              ${
-                isActive
-                  ? "bg-black text-white shadow-md"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-white"
-              }
-            `}
+            className="relative px-8 py-2.5 outline-none"
           >
-            {tab.label}
+            {isActive && (
+              <motion.div
+                layoutId="activeTab"
+                className="absolute inset-0 bg-white dark:bg-white/10 shadow-lg shadow-black/5 rounded-2xl"
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+            )}
+            <span className={`relative z-10 text-sm font-bold tracking-tight transition-colors duration-300 ${
+              isActive ? "text-accent" : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            }`}>
+              {tab.label}
+            </span>
           </button>
         );
       })}

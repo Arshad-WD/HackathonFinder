@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
 import fs from "fs";
-import "./cron.js";
-import { runDeepSearch } from "./runSearch.js";
+import path from "path";
+import "../cron.js";
+import { runDeepSearch } from "./core/runSearch.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -14,7 +15,7 @@ app.use(cors({
 
 app.use(express.json());
 
-const RESULT_FILE = "results.json";
+const RESULT_FILE = path.join(process.cwd(), "data", "results.json");
 
 // ✅ PROTECTION SYSTEM
 let isJobRunning = false;
@@ -64,13 +65,26 @@ app.post("/trigger", async (req, res) => {
 });
 
 // ✅ FRONTEND READS FROM HERE
-app.get("/api/events", (req, res) => {
-  if (!fs.existsSync(RESULT_FILE)) {
-    return res.json([]);
+app.get("/api/events", async (req, res) => {
+  // Try local first
+  if (fs.existsSync(RESULT_FILE)) {
+    const data = JSON.parse(fs.readFileSync(RESULT_FILE, "utf-8"));
+    return res.json(data);
   }
 
-  const data = JSON.parse(fs.readFileSync(RESULT_FILE, "utf-8"));
-  res.json(data);
+  // Fallback to GitHub (for Vercel/Serverless)
+  try {
+    const GITHUB_RAW_URL = "https://raw.githubusercontent.com/Arshad-WD/HackathonFinder/main/backend/data/results.json";
+    const response = await fetch(GITHUB_RAW_URL);
+    if (response.ok) {
+      const data = await response.json();
+      return res.json(data);
+    }
+  } catch (err) {
+    console.error("❌ GitHub fallback failed:", err.message);
+  }
+
+  res.json([]);
 });
 
 app.get("/ping", (req, res) => {

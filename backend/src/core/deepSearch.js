@@ -1,6 +1,6 @@
 import { crawlPage } from "./crawler.js";
-import { extractInfo } from "./openrouterLLM.js";
-import { isFutureOrToday } from "./filters.js";
+import { extractInfo } from "../utils/openrouterLLM.js";
+import { isFutureOrToday } from "../utils/filters.js";
 
 
 function estimateDeadline() {
