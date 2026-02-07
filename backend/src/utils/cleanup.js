@@ -1,6 +1,7 @@
 import fs from "fs";
+import path from "path";
 
-const RESULTS_FILE = "results.json";
+const RESULTS_FILE = path.join(process.cwd(), "data", "results.json");
 
 export function removeExpiredEvents() {
   if (!fs.existsSync(RESULTS_FILE)) return;

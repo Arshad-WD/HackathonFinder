@@ -1,6 +1,6 @@
 import cron from "node-cron";
-import { runDeepSearch } from "./runSearch.js";
-import { archiveExpiredEvents } from "./archiveCleanup.js";
+import { runDeepSearch } from "./core/runSearch.js";
+import { archiveExpiredEvents } from "./utils/archiveCleanup.js";
 
 
 console.log("Cron scheduler started");

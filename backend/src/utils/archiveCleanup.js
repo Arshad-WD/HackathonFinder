@@ -1,7 +1,8 @@
 import fs from "fs";
+import path from "path";
 
-const ACTIVE_FILE = "results.json";
-const ARCHIVE_FILE = "archive.json";
+const ACTIVE_FILE = path.join(process.cwd(), "data", "results.json");
+const ARCHIVE_FILE = path.join(process.cwd(), "data", "archive.json");
 
 export function archiveExpiredEvents() {
   if (!fs.existsSync(ACTIVE_FILE)) return;

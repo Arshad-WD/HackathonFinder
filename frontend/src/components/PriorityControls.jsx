@@ -1,4 +1,4 @@
-import { ArrowUpWideCombined, Filter, Check } from "lucide-react";
+import { ArrowUpNarrowWide, Filter, Check } from "lucide-react";
 
 export default function PriorityControls({
   sortByPriority,
@@ -18,7 +18,7 @@ export default function PriorityControls({
           }
         `}
       >
-        <ArrowUpWideCombined className="w-4 h-4" />
+        <ArrowUpNarrowWide className="w-4 h-4" />
         <span>Sort by Priority</span>
         {sortByPriority && <Check className="w-3 h-3" />}
       </button>

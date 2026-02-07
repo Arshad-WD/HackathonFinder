@@ -1,7 +1,7 @@
 import EventCard from "./EventCard";
 import SkeletonCard from "./SkeletonCard";
 
-export default function EventGrid({ data, loading }) {
+export default function EventGrid({ data, loading, savedEvents = [], onToggleSave }) {
   // ✅ LOADING STATE (SKELETON GRID)
   if (loading) {
     return (
@@ -30,12 +30,19 @@ export default function EventGrid({ data, loading }) {
   // ✅ NORMAL GRID (WITH SAFE UNIQUE KEYS)
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
-      {data.map(event => (
-        <EventCard
-          key={`${event.source}-${event.title}-${event.deadline}`}
-          event={event}
-        />
-      ))}
+      {data.map(event => {
+        const eventId = `${event.source}-${event.title}-${event.deadline}`;
+        const isSaved = savedEvents.some(s => `${s.source}-${s.title}-${s.deadline}` === eventId);
+
+        return (
+          <EventCard
+            key={eventId}
+            event={event}
+            isSaved={isSaved}
+            onToggleSave={onToggleSave}
+          />
+        );
+      })}
     </div>
   );
 }

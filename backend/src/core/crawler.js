@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { createRateLimiter } from "./rateLimiter.js";
+import { createRateLimiter } from "../utils/rateLimiter.js";
 
 // 1 request every 5 seconds (GLOBAL crawler throttle)
 const crawlLimiter = createRateLimiter({

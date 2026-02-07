@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import fs from "fs";
 import path from "path";
-import "../cron.js";
+import "./cron.js";
 import { runDeepSearch } from "./core/runSearch.js";
 
 const app = express();

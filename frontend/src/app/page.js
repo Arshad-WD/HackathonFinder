@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchEvents, triggerFetch } from "@/services/api";
-import { Sparkles, Compass, Search as SearchIcon } from "lucide-react";
+import { Sparkles, Compass, Search as SearchIcon, Bookmark, Zap, TrendingUp } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import Tabs from "@/components/Tabs";
@@ -15,6 +15,7 @@ import PriorityControls from "@/components/PriorityControls";
 
 export default function Home() {
   const [events, setEvents] = useState([]);
+  const [savedEvents, setSavedEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState("hackathon");
   const [search, setSearch] = useState("");
@@ -46,12 +47,44 @@ export default function Home() {
     }
   }
 
+  // Load Saved Events from LocalStorage
   useEffect(() => {
     loadData();
+    const saved = localStorage.getItem("deepsearch_saved");
+    if (saved) {
+      try {
+        setSavedEvents(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to load saved events");
+      }
+    }
   }, []);
 
+  // Persist Saved Events to LocalStorage
+  useEffect(() => {
+    localStorage.setItem("deepsearch_saved", JSON.stringify(savedEvents));
+  }, [savedEvents]);
+
+  const toggleSave = (event) => {
+    const eventId = `${event.source}-${event.title}-${event.deadline}`;
+    setSavedEvents(prev => {
+      const exists = prev.some(s => `${s.source}-${s.title}-${s.deadline}` === eventId);
+      if (exists) {
+        return prev.filter(s => `${s.source}-${s.title}-${s.deadline}` !== eventId);
+      }
+      return [...prev, event];
+    });
+  };
+
+  const stats = useMemo(() => ({
+    hackathons: events.filter(e => e.type === "hackathon").length,
+    internships: events.filter(e => e.type === "internship").length,
+    highPriority: events.filter(e => e.priority >= 70).length
+  }), [events]);
+
   const processedData = useMemo(() => {
-    let result = events.filter(e => e.type === tab);
+    let result = tab === "saved" ? savedEvents : events.filter(e => e.type === tab);
+    
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -60,14 +93,14 @@ export default function Home() {
           e.location?.toLowerCase().includes(q)
       );
     }
-    if (highPriorityOnly) {
+    if (highPriorityOnly && tab !== "saved") {
       result = result.filter(e => e.priority >= 70);
     }
     if (sortByPriority) {
       result = [...result].sort((a, b) => b.priority - a.priority);
     }
     return result;
-  }, [events, tab, search, highPriorityOnly, sortByPriority]);
+  }, [events, savedEvents, tab, search, highPriorityOnly, sortByPriority]);
 
   const total = processedData.length;
   const paginatedData = processedData.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -81,7 +114,7 @@ export default function Home() {
       <Navbar />
 
       {/* ---------- HERO SECTION ---------- */}
-      <section className="max-w-7xl mx-auto px-6 mb-20 text-center">
+      <section className="max-w-7xl mx-auto px-6 mb-20 text-center relative">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -89,16 +122,41 @@ export default function Home() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-float">
             <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-xs font-bold tracking-widest uppercase text-accent">AI-Powered Discovery</span>
+            <span className="text-xs font-bold tracking-widest uppercase text-accent">Intelligent Scouter</span>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-gradient leading-[1.1]">
-            Find Your Next <br /> Major Opportunity
+            Curating The Best <br /> Tech Opportunities
           </h1>
           
           <p className="text-gray-500 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-medium">
-            Deep Search crawls the web in real-time to find high-impact hackathons and internships tailored for high-priority applicants.
+            AI-driven discovery for ambitious students. We crawl thousands of sources to bring you high-value tech events.
           </p>
+
+          {/* ---------- STATS DASHBOARD ---------- */}
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
+            <div className="px-6 py-3 rounded-2xl glass border border-gray-200/50 flex items-center gap-3">
+              <Zap className="w-4 h-4 text-purple-500" />
+              <div className="text-left">
+                <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hackathons</div>
+                <div className="text-lg font-bold leading-none">{stats.hackathons}</div>
+              </div>
+            </div>
+            <div className="px-6 py-3 rounded-2xl glass border border-gray-200/50 flex items-center gap-3">
+              <TrendingUp className="w-4 h-4 text-blue-500" />
+              <div className="text-left">
+                <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Internships</div>
+                <div className="text-lg font-bold leading-none">{stats.internships}</div>
+              </div>
+            </div>
+            <div className="px-6 py-3 rounded-2xl glass border border-accent/20 flex items-center gap-3 bg-accent/5">
+              <Compass className="w-4 h-4 text-accent" />
+              <div className="text-left">
+                <div className="text-[10px] font-black uppercase tracking-widest text-accent/60">Premium</div>
+                <div className="text-lg font-bold leading-none text-accent">{stats.highPriority}</div>
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         {/* ---------- CONTROLS PANEL ---------- */}
@@ -106,7 +164,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-4xl mx-auto glass-card rounded-3xl p-6 md:p-8 relative z-10"
+          className="max-w-4xl mx-auto glass-card rounded-[2.5rem] p-6 md:p-8 relative z-10"
         >
           <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
             <Tabs active={tab} setActive={setTab} />
@@ -135,16 +193,21 @@ export default function Home() {
         <AnimatePresence mode="wait">
           <motion.div
             key={tab + search + page}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.4 }}
           >
-            <EventGrid data={paginatedData} loading={loading} />
+            <EventGrid 
+              data={paginatedData} 
+              loading={loading} 
+              savedEvents={savedEvents}
+              onToggleSave={toggleSave}
+            />
           </motion.div>
         </AnimatePresence>
 
-        <div className="mt-16">
+        <div className="mt-16 flex justify-center">
           <Pagination
             total={total}
             page={page}
@@ -153,10 +216,6 @@ export default function Home() {
           />
         </div>
       </section>
-
-      {/* ---------- BACKGROUND ORBS ---------- */}
-      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px] pointer-events-none -z-10" />
-      <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none -z-10" />
     </main>
   );
 }

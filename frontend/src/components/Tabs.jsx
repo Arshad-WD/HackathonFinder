@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 export default function Tabs({ active, setActive }) {
   const tabs = [
     { key: "hackathon", label: "Hackathons" },
-    { key: "internship", label: "Internships" }
+    { key: "internship", label: "Internships" },
+    { key: "saved", label: "Saved" }
   ];
 
   return (
