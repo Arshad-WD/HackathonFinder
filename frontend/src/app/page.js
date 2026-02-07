@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchEvents, triggerFetch } from "@/services/api";
-import { Sparkles, Compass, Search as SearchIcon, Bookmark, Zap, TrendingUp } from "lucide-react";
+import { Sparkles, Compass, Search as SearchIcon, Bookmark, Zap, TrendingUp, Cpu } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import Tabs from "@/components/Tabs";
@@ -12,6 +12,7 @@ import FetchButton from "@/components/FetchButton";
 import EventGrid from "@/components/EventGrid";
 import Pagination from "@/components/Pagination";
 import PriorityControls from "@/components/PriorityControls";
+import QuickView from "@/components/QuickView";
 
 export default function Home() {
   const [events, setEvents] = useState([]);
@@ -20,6 +21,7 @@ export default function Home() {
   const [tab, setTab] = useState("hackathon");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const [sortByPriority, setSortByPriority] = useState(true);
   const [highPriorityOnly, setHighPriorityOnly] = useState(false);
@@ -109,6 +111,10 @@ export default function Home() {
     setPage(1);
   }, [tab, search, highPriorityOnly, sortByPriority]);
 
+  const currentIsSaved = selectedEvent ? savedEvents.some(s => 
+    `${s.source}-${s.title}-${s.deadline}` === `${selectedEvent.source}-${selectedEvent.title}-${selectedEvent.deadline}`
+  ) : false;
+
   return (
     <main className="min-h-screen pt-24 pb-20">
       <Navbar />
@@ -116,68 +122,71 @@ export default function Home() {
       {/* ---------- HERO SECTION ---------- */}
       <section className="max-w-7xl mx-auto px-6 mb-20 text-center relative">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-float">
-            <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-xs font-bold tracking-widest uppercase text-accent">Intelligent Scouter</span>
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass mb-10 animate-float border-white/50 dark:border-white/10 shadow-2xl">
+            <Cpu className="w-4 h-4 text-accent" />
+            <span className="text-[10px] font-black tracking-[0.2em] uppercase text-accent">Artisanal Discovery v2.0</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-gradient leading-[1.1]">
-            Curating The Best <br /> Tech Opportunities
+          <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-8 text-gradient leading-[1] text-balance">
+            Design Meets <br /> Discovery
           </h1>
           
-          <p className="text-gray-500 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-medium">
-            AI-driven discovery for ambitious students. We crawl thousands of sources to bring you high-value tech events.
+          <p className="text-gray-500/80 text-xl md:text-2xl max-w-3xl mx-auto mb-16 font-light leading-relaxed">
+            A boutique experience for tech opportunities. Our algorithms curate, so you can create.
           </p>
 
           {/* ---------- STATS DASHBOARD ---------- */}
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
-            <div className="px-6 py-3 rounded-2xl glass border border-gray-200/50 flex items-center gap-3">
-              <Zap className="w-4 h-4 text-purple-500" />
+          <div className="flex flex-wrap items-center justify-center gap-6 mb-20">
+            <motion.div whileHover={{ y: -5 }} className="px-8 py-4 rounded-[2rem] glass border border-white/40 flex items-center gap-4 group">
+              <Zap className="w-5 h-5 text-purple-500 group-hover:scale-110 transition-transform" />
               <div className="text-left">
-                <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Hackathons</div>
-                <div className="text-lg font-bold leading-none">{stats.hackathons}</div>
+                <div className="text-[9px] font-black uppercase tracking-[0.15em] text-gray-400">Hackathons</div>
+                <div className="text-xl font-extrabold leading-none">{stats.hackathons}</div>
               </div>
-            </div>
-            <div className="px-6 py-3 rounded-2xl glass border border-gray-200/50 flex items-center gap-3">
-              <TrendingUp className="w-4 h-4 text-blue-500" />
+            </motion.div>
+            <motion.div whileHover={{ y: -5 }} className="px-8 py-4 rounded-[2rem] glass border border-white/40 flex items-center gap-4 group">
+              <TrendingUp className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform" />
               <div className="text-left">
-                <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Internships</div>
-                <div className="text-lg font-bold leading-none">{stats.internships}</div>
+                <div className="text-[9px] font-black uppercase tracking-[0.15em] text-gray-400">Internships</div>
+                <div className="text-xl font-extrabold leading-none">{stats.internships}</div>
               </div>
-            </div>
-            <div className="px-6 py-3 rounded-2xl glass border border-accent/20 flex items-center gap-3 bg-accent/5">
-              <Compass className="w-4 h-4 text-accent" />
+            </motion.div>
+            <motion.div whileHover={{ y: -5 }} className="px-8 py-4 rounded-[2rem] glass border border-accent/30 flex items-center gap-4 bg-accent/[0.03]">
+              <Compass className="w-5 h-5 text-accent animate-spin-slow" />
               <div className="text-left">
-                <div className="text-[10px] font-black uppercase tracking-widest text-accent/60">Premium</div>
-                <div className="text-lg font-bold leading-none text-accent">{stats.highPriority}</div>
+                <div className="text-[9px] font-black uppercase tracking-[0.15em] text-accent/60">Match Quality</div>
+                <div className="text-xl font-extrabold leading-none text-accent">High-Tier</div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </motion.div>
 
         {/* ---------- CONTROLS PANEL ---------- */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-4xl mx-auto glass-card rounded-[2.5rem] p-6 md:p-8 relative z-10"
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="max-w-5xl mx-auto glass-card rounded-[3rem] p-8 md:p-10 relative z-10 border-white/50 shadow-2xl"
         >
-          <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+          <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
             <Tabs active={tab} setActive={setTab} />
             
             <div className="flex gap-4 w-full md:w-auto">
-              <div className="relative flex-1 md:w-80">
+              <div className="relative flex-1 md:w-96 group">
                 <SearchBar value={search} onChange={setSearch} />
+                <div className="absolute inset-0 rounded-2xl border border-accent/0 group-focus-within:border-accent/30 transition-colors pointer-events-none" />
               </div>
-              <FetchButton onClick={handleFetch} loading={loading} />
+              <div className={loading ? "scan-glow rounded-2xl" : ""}>
+                <FetchButton onClick={handleFetch} loading={loading} />
+              </div>
             </div>
           </div>
           
-          <div className="mt-8 pt-6 border-t border-gray-200/50 dark:border-white/5">
+          <div className="mt-10 pt-8 border-t border-gray-100 dark:border-white/5">
             <PriorityControls
               sortByPriority={sortByPriority}
               setSortByPriority={setSortByPriority}
@@ -193,21 +202,22 @@ export default function Home() {
         <AnimatePresence mode="wait">
           <motion.div
             key={tab + search + page}
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.4 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.5 }}
           >
             <EventGrid 
               data={paginatedData} 
               loading={loading} 
               savedEvents={savedEvents}
               onToggleSave={toggleSave}
+              onSelect={setSelectedEvent}
             />
           </motion.div>
         </AnimatePresence>
 
-        <div className="mt-16 flex justify-center">
+        <div className="mt-20 flex justify-center">
           <Pagination
             total={total}
             page={page}
@@ -216,6 +226,15 @@ export default function Home() {
           />
         </div>
       </section>
+
+      {/* ---------- QUICK VIEW DRAWER ---------- */}
+      <QuickView 
+        event={selectedEvent}
+        isOpen={!!selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+        isSaved={currentIsSaved}
+        onToggleSave={toggleSave}
+      />
     </main>
   );
 }
